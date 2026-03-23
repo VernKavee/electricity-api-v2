@@ -19,10 +19,18 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Run Unit Tests # <--- NEW STEP
+        run: npm test
+
       - name: Lint check (Syntax Check)
         run: node --check index.js
-
+    
+  build-and-push:
+    needs: test-and-build # <--- This job ONLY runs if the "test" job passes!
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
       - name: Build Docker Image
         run: |
-          docker build -t electricity-api:${{ github.sha }} .
-          echo "Build successful for commit ${{ github.sha }}"
+            docker build -t electricity-api:prod-${{ github.sha }} .
+            echo "Production image built successfully."
